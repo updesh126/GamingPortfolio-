@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 
@@ -6,52 +7,65 @@ public class GetWebReq : MonoBehaviour
 {
     void Start()
     {
-        // A correct website page.
-        StartCoroutine(GetData("http://localhost/backend/GetDate.php"));
-        StartCoroutine(GetUser("http://localhost/backend/GetUser.php"));
-         
-        // A non-existing page.
-        StartCoroutine(GetData("https://error.html"));
+    
+       // StartCoroutine(GetUser());
+        StartCoroutine(Login("testuser","123456"));
+
     }
 
-    IEnumerator GetData(string uri)
+  /*  IEnumerator GetData()
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
+        using (UnityWebRequest www = UnityWebRequest.Get("http://localhost/backend/GetDate.php"))
         {
             // Request and wait for the desired page.
-            yield return webRequest.SendWebRequest();
+            yield return www.SendWebRequest();
 
-            string[] pages = uri.Split('/');
-            int page = pages.Length - 1;
-
-            if (webRequest.isNetworkError)
+            if (www.isNetworkError)
             {
-                Debug.Log(pages[page] + ": Error: " + webRequest.error);
+                Debug.Log(www.error);
             }
             else
             {
-                Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                Debug.Log(www.downloadHandler.text);
             }
         }
-    }
+    }*/
 
-    IEnumerator GetUser(string uri)
+   /* IEnumerator GetUser()
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
+        using (UnityWebRequest www = UnityWebRequest.Get("http://localhost/backend/GetUser.php"))
         {
             // Request and wait for the desired page.
-            yield return webRequest.SendWebRequest();
+            yield return www.SendWebRequest();
 
-            string[] pages = uri.Split('/');
-            int page = pages.Length - 1;
-
-            if (webRequest.isNetworkError)
+            if (www.isNetworkError || www.isHttpError)
             {
-                Debug.Log(pages[page] + ": Error: " + webRequest.error);
+                Debug.Log(www.error);
             }
             else
             {
-                Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                Debug.Log(www.downloadHandler.text);
+            }
+        }
+    }*/
+
+    IEnumerator Login(String username, String password)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("loginUser", username);
+        form.AddField("loginPass", password);
+
+        using (UnityWebRequest www = UnityWebRequest.Post("http://localhost/backend/Login.php", form))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                Debug.Log(www.downloadHandler.text);
             }
         }
     }
